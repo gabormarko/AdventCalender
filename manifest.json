@@ -7,12 +7,12 @@
   "theme_color": "#b30000",
   "icons": [
     {
-      "src": "calendar-icon.png",
+      "src": "app-icon-me.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "calendar-icon.png",
+      "src": "app-icon-me.png",
       "sizes": "512x512",
       "type": "image/png"
     }
