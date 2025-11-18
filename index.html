@@ -13,6 +13,22 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <style>
+        #loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: #b30000;
+          color: white;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-size: 2em;
+          z-index: 9999;
+          transition: opacity 0.5s;
+        }
     body {
       font-family: Arial, sans-serif;
       background: #f3f3f3;
@@ -84,10 +100,21 @@
 </script>
 
 <body>
+  <div id="loading-overlay">
+    <img src="app-icon-me.png" alt="Loading..." style="width:200px;height:200px;margin-bottom:20px;">
+    hihi...
+  </div>
   <h1>🎄 Julis Adventi Kalendáriuma 🎄</h1>
   <div class="calendar" id="calendar"></div>
-
   <div id="content"></div>
+  // Hide loading overlay after 1 second
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const overlay = document.getElementById('loading-overlay');
+      overlay.style.opacity = 0;
+      setTimeout(() => overlay.style.display = 'none', 500);
+    }, 1000);
+  });
 
 <script>
   const contentData = {
@@ -95,6 +122,26 @@
     2: { text: "Day 2 surprise!", image: "", link: "", video: "" },
     3: { text: "Keep going!", image: "kofarago.jpg", link: "", video: "" },
     4: { text: "Keep going!", image: "", link: "", video: "" },
+    5: { text: "Keep going!", image: "", link: "", video: "" },
+    6: { text: "Keep going!", image: "", link: "", video: "" },
+    7: { text: "Keep going!", image: "", link: "", video: "" },
+    8: { text: "Keep going!", image: "", link: "", video: "" },
+    9: { text: "Keep going!", image: "", link: "", video: "" },
+    10: { text: "Keep going!", image: "", link: "", video: "" },
+    11: { text: "Keep going!", image: "", link: "", video: "" },
+    12: { text: "Keep going!", image: "", link: "", video: "" },
+    13: { text: "Keep going!", image: "", link: "", video: "" },
+    14: { text: "Keep going!", image: "zootopia.jpg", link: "", video: "" },
+    15: { text: "Keep going!", image: "", link: "", video: "" },
+    16: { text: "Keep going!", image: "", link: "", video: "" },
+    17: { text: "Keep going!", image: "", link: "", video: "" },
+    18: { text: "Keep going!", image: "", link: "", video: "" },
+    19: { text: "Keep going!", image: "", link: "", video: "" },
+    20: { text: "Keep going!", image: "", link: "", video: "" },
+    21: { text: "Keep going!", image: "", link: "", video: "" },
+    22: { text: "Keep going!", image: "", link: "", video: "" },
+    23: { text: "Keep going!", image: "", link: "", video: "" },
+    24: { text: "Keep going!", image: "", link: "", video: "" },
     // ... fill in days 4-24
     24: { text: "Merry Christmas! 🎁", image: "", link: "", video: "" }
   };
