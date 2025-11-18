@@ -23,17 +23,17 @@
                         }
                     @keyframes bounce {
                       0%   { transform: scale(1); }
-                      20%  { transform: scale(1.15, 0.85); }
+                      20%  { transform: scale(1.2, 0.8); }
                       40%  { transform: scale(0.95, 1.05); }
-                      60%  { transform: scale(1.05, 0.95); }
+                      60%  { transform: scale(1.15, 0.85); }
                       80%  { transform: scale(0.98, 1.02); }
                       100% { transform: scale(1); }
                     }
 
                     @keyframes shake {
                       0% { transform: translate(0, 0) scale(1); }
-                      10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 0) scale(1); }
-                      20%, 40%, 60%, 80% { transform: translate(2px, 0) scale(1); }
+                      10%, 30%, 50%, 70%, 90% { transform: translate(-8px, 0) scale(1); }
+                      20%, 40%, 60%, 80% { transform: translate(8px, 0) scale(1); }
                       100% { transform: translate(0, 0) scale(1); }
                     }
 
@@ -41,7 +41,7 @@
                       animation: bounce 0.4s;
                     }
                     .door.shake {
-                      animation: shake 0.3s;
+                      animation: shake 1.0s;
                     }
                     @keyframes pulse {
                       0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
@@ -57,16 +57,18 @@
                   margin-bottom: 0.5em;
                 }
             #loading-powered {
-              position: absolute;
+              position: fixed;
               bottom: 18px;
               left: 0;
               width: 100vw;
               text-align: center;
-              font-size: 0.5em;
+              font-size: 0.8em;
               color: #fff;
               opacity: 0.7;
               letter-spacing: 1px;
               font-family: 'Fira Mono', 'Consolas', 'Menlo', 'Monaco', monospace;
+              z-index: 10000;
+              pointer-events: none;
             }
         #loading-overlay {
           position: fixed;
@@ -174,8 +176,8 @@
   <div id="loading-overlay">
     <img src="app-icon-me.png" alt="Loading..." style="width:200px;height:200px;margin-bottom:20px;">
     <span class="loading-message">hihi...</span>
-    <div id="loading-powered">powered by gabo | v2025.01.02 </div>
   </div>
+  <div id="loading-powered">powered by gabo | v2025.01.02 </div>
   <h1>🎄Julis Adventi Kalendáriuma🎄</h1>
   <div class="calendar" id="calendar"></div>
   <div id="content"></div>
@@ -199,30 +201,30 @@
 
 <script>
     const contentData = {
-      1: { title: "1. Szia Julis!:)", text: "Üdv az adventi kalendáriumodban. Minden napra jut majd egy kis meglepetés, hihi.", image: "", link: "", video: "" },
-      2: { title: "2. nap", text: "Day 2 surprise!", image: "", link: "", video: "" },
-      3: { title: "3. nap", text: "Keep going!", image: "kofarago.jpg", link: "", video: "" },
-      4: { title: "4. nap", text: "Keep going!", image: "", link: "", video: "" },
-      5: { title: "5. nap", text: "Keep going!", image: "", link: "", video: "" },
-      6: { title: "6. nap", text: "Ho-ho-ho-hooo!🎅", image: "", link: "", video: "" },
-      7: { title: "7. nap", text: "Keep going!", image: "", link: "", video: "" },
+      1: { title: "1. Szia Julis!:)", text: "Üdv az adventi kalendáriumodban. Minden napra jut majd egy kis meglepetés, hihi.\n Az első maga az applikáció, remélem tetszik:)\nPusziii!!!", image: "", link: "", video: "" },
+      2: { title: "2. Ügyi-bügyi vagy", text: "hogy ma is visszatértél:)!\n Jutalmad egy kis kávépénz-támogatás, hogy nyitva tudd tartani ma a szemeidet órán. Checkold a Revolutod!", image: "", link: "", video: "" },
+      3: { title: "3. 3 hónapja...", text: "találkoztunk először kettesben!:) Durva, mennyi minden történt azóta:)\n A havi kis borítékod nem marad el, majd odaadom, ha találkozunk!:)", image: "0903.jpg", link: "", video: "" },
+      4: { title: "4. Jó reggelt!", text: "Ügyes legyél ma a susuban!:)", image: "", link: "", video: "wakey.mp4" },
+      5: { title: "5. nap", text: "Keep going!", image: "", link: "https://open.spotify.com/track/2bN2Q3GbSlknHrAooe6sA7?si=7c5ca5b4e76f4d7b", video: "" },
+      6: { title: "6. Ho-ho-ho-hooo!🎅", text: "Remélem jól viselkedtél az évben, kedves Julis!\n ", image: "", link: "", video: "" },
+      7: { title: "7. Szeretlek!", text: "Keep going!", image: "", link: "", video: "" },
       8: { title: "8. nap", text: "Keep going!", image: "", link: "", video: "" },
       9: { title: "9. nap", text: "Keep going!", image: "", link: "", video: "" },
-      10: { title: "10. nap", text: "Keep going!", image: "", link: "", video: "" },
-      11: { title: "11. nap", text: "Keep going!", image: "", link: "", video: "" },
-      12: { title: "12. nap", text: "Keep going!", image: "", link: "", video: "" },
-      13: { title: "13. nap", text: "Keep going!", image: "", link: "", video: "" },
-      14: { title: "14. nap", text: "Keep going!", image: "zootopia.jpg", link: "", video: "" },
-      15: { title: "15. nap", text: "Keep going!", image: "", link: "", video: "" },
-      16: { title: "16. nap", text: "Keep going!", image: "", link: "", video: "" },
+      10: { title: "10. A mai meglepetés pedig...", text: "... én leszek!:)\nNa jó, ennyire azért nem kell repdesned az örömtől. Végre újra találkozunk, váááááááááá!", image: "", link: "", video: "" },
+      11: { title: "11. Futááás", text: "Julisom, ma olyan résztávokat futunk, amilyet csak szeretnél;)", image: "", link: "", video: "" },
+      12: { title: "12. Karácsonyi vásár", text: "Ma választhatsz bármit a karácsonyi vásárban, ami megtetszik!:)", image: "", link: "", video: "" },
+      13: { title: "13. Setemény", text: "Ma vendégem vagy egy sütire. Pusszancs!", image: "", link: "", video: "" },
+      14: { title: "14. Búcsú:()", text: "Kár, hogy mész:( De hamarosan újra együtt!:)\n Búcsúzóul megiszunk ma egy forralt bort a városban:)", image: "", link: "", video: "" },
+      15: { title: "15. Hihi!", text: "A mai meglepi egy mozijegy!\nMikor megyünk???:)", image: "", link: "", video: "" },
+      16: { title: "16. Hupsz...", text: "Julisom, az élet nem mindig habostorta! Néha meg kell állni, és értékelni mindazt, ami megadatott. Nem szabad telhetetlennek lenni.", image: "", link: "", video: "" },
       17: { title: "17. nap", text: "Keep going!", image: "", link: "", video: "" },
       18: { title: "18. nap", text: "Keep going!", image: "", link: "", video: "" },
       19: { title: "19. nap", text: "Keep going!", image: "", link: "", video: "" },
-      20: { title: "20. nap", text: "Keep going!", image: "", link: "", video: "" },
-      21: { title: "21. nap", text: "Keep going!", image: "", link: "", video: "" },
+      20: { title: "20. Meglepetés", text: "Szio! Remélem ma találkozunk, és odaadhatom a cuki meglepetésemet:)", image: "", link: "", video: "" },
+      21: { title: "21. Haló!", text: "Remélem ma veled ébredek!:)\n Mit szólnál hozzá, ha elmennék ma egy jó helyre ebédelni?:)", image: "", link: "", video: "" },
       22: { title: "22. nap", text: "Keep going!", image: "", link: "", video: "" },
       23: { title: "23. nap", text: "Keep going!", image: "", link: "", video: "" },
-      24: { title: "24. Boldog karácsonyt!", text: "Merry Christmas! 🎁", image: "", link: "", video: "" }
+      24: { title: "24. Boldog karácsonyt!", text: "Legyen szép napod ma a családdal, Julis!🎁", image: "", link: "", video: "" }
     };
 
   // Customizable: set how many doors can be opened (0 = use normal logic, 1-24 = open up to that day)
@@ -267,8 +269,10 @@
       door.addEventListener("click", () => {
         door.classList.add('shake');
         if (window.navigator.vibrate) window.navigator.vibrate(350);
-        setTimeout(() => door.classList.remove('shake'), 300);
-        showLockedMessage(day);
+        setTimeout(() => {
+          door.classList.remove('shake');
+          showLockedMessage(day);
+        }, 350);
       });
     } else {
       door.classList.add('available');
@@ -278,14 +282,14 @@
       }
       door.addEventListener("click", () => {
         // Custom vibration pattern: triple pulse
-        if (window.navigator.vibrate) window.navigator.vibrate([80, 40, 80, 40, 80]);
+        if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200, 100, 200]);
         door.classList.remove('pulse');
         door.classList.add('scale-up');
         setTimeout(() => {
           door.classList.remove('scale-up');
           door.classList.add('bounce');
-          setTimeout(() => door.classList.remove('bounce'), 400);
-        }, 180);
+          setTimeout(() => door.classList.remove('bounce'), 300);
+        }, 300);
         openDoor(day);
         localStorage.setItem(openedKey, '1');
       });
