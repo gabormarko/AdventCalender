@@ -111,7 +111,7 @@
     h1 {
       text-align: center;
       margin-bottom: 10px;
-      font-size: 1.2em;
+      font-size: 1.4em;
       font-family: 'Comic Neue', Arial, sans-serif;
       font-weight: bold;
       color: #fff;
@@ -158,19 +158,23 @@
 
     #content {
       margin-top: 10px;
-      padding: 20px;
+      padding: 16px;
       background: white;
       border-radius: 8px;
-      width: 80%;
+      width: 90%;
       max-width: 500px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       display: none;
     }
 
     #content h1 {
-      margin-top: 0.1em;
-      margin-bottom: 0.15em;
-      font-size: 1.2em;
+      margin-top: -8px;
+      margin-bottom: -8px;
+      font-size: 1.3em;
+      font-family: 'Comic Neue', Arial, sans-serif;
+      font-weight: bold;
+      color: #000000;
+      text-shadow: none;
     }
 
     #content img {
@@ -192,20 +196,23 @@
     align-items: center;
     flex-direction: column;
   }
-  #santa-overlay-top img {
-    max-width: 180px;
-    max-height: 120px;
-  }
-  #santa-overlay-center img {
+  #santa-overlay-top img,
+  #xmas-overlay-top img {
     max-width: 270px;
-    max-height: 270px;
-    opacity: 0;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-    background: #fff;
-    padding: 8px;
+    max-height: 180px;
   }
-  #santa-overlay-bottom button {
+    #santa-overlay-center img,
+    #xmas-overlay-center img {
+      max-width: 270px;
+      max-height: 270px;
+      opacity: 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      background: #fff;
+      padding: 8px;
+    }
+  #santa-overlay-bottom button,
+  #xmas-overlay-bottom button {
     font-family: 'Comic Neue', Arial, sans-serif;
     font-size: 1.1em;
     padding: 10px 28px;
@@ -245,6 +252,12 @@
     <div id="santa-overlay-center" style="display:flex;justify-content:center;align-items:center;min-height:180px;"></div>
     <div id="santa-overlay-bottom" style="width:100%;display:flex;justify-content:center;align-items:center;margin-top:18px;"></div>
   </div>
+  <!-- Xmas Day 24 Overlay (hidden by default) -->
+  <div id="xmas-overlay" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.65);backdrop-filter:blur(2px);justify-content:center;align-items:center;flex-direction:column;">
+    <div id="xmas-overlay-top" style="width:100%;display:flex;justify-content:center;align-items:center;margin-top:32px;margin-bottom:10px;"></div>
+    <div id="xmas-overlay-center" style="display:flex;justify-content:center;align-items:center;min-height:180px;"></div>
+    <div id="xmas-overlay-bottom" style="width:100%;display:flex;justify-content:center;align-items:center;margin-top:18px;"></div>
+  </div>
 
 <script>
   // Hide loading overlay after 1 second
@@ -265,8 +278,8 @@
 
 <script>
     const contentData = {
-      1: { title: "1. Szia Julis!:)", text: "Üdv az adventi kalendáriumodban. Minden napra jut majd egy kis meglepetés, hihi.\n Az első maga az applikáció, remélem tetszik:)\nPusziii!!!", image: "", link: "", video: "" },
-      2: { title: "2. Ügyi-bügyi vagy", text: "hogy ma is visszatértél:)!\n Jutalmad egy kis kávépénz-támogatás, hogy nyitva tudd tartani ma a szemeidet órán. Checkold a Revolutod!", image: "", link: "", video: "" },
+      1: { title: "1. Szia Julis!:)", text: "Üdv az adventi kalendáriumodban! Minden napra jut majd egy kis meglepetés, hihi.\n Az első maga az applikáció, remélem tetszik:)\nPusziii!!!🥰", image: "", link: "", video: "" },
+      2: { title: "2. Ügyi-bügyi vagy...", text: "...hogy ma is visszatértél:)!\n Jutalmad egy kis kávépénz-támogatás (így hó vége felé közeledve, hihi), hogy nyitva tudd tartani ma a szemeidet órán. Checkold a Revolutod!", image: "", link: "", video: "" },
       3: { title: "3. 3 hónapja...", text: "találkoztunk először kettesben!:) Durva, mennyi minden történt azóta:)\n A havi kis borítékod nem marad el, majd odaadom, ha találkozunk!:)", image: "0903.jpg", link: "", video: "" },
       4: { title: "4. Jó reggelt!", text: "Ügyes legyél ma a susuban!:)", image: "", link: "", video: "wakey.mp4" },
       5: { title: "5. nap", text: "Keep going!", image: "", link: "https://open.spotify.com/track/2bN2Q3GbSlknHrAooe6sA7?si=7c5ca5b4e76f4d7b", video: "" },
@@ -279,7 +292,7 @@
       12: { title: "12. Karácsonyi vásár", text: "Ma választhatsz bármit a karácsonyi vásárban, ami megtetszik!:)", image: "", link: "", video: "" },
       13: { title: "13. Setemény", text: "Ma vendégem vagy egy sütire. Pusszancs!", image: "", link: "", video: "" },
       14: { title: "14. Búcsú:()", text: "Kár, hogy mész:( De hamarosan újra együtt!:)\n Búcsúzóul megiszunk ma egy forralt bort a városban:)", image: "", link: "", video: "" },
-      15: { title: "15. Hihi!", text: "A mai meglepi egy mozijegy!\nMikor megyünk???:)", image: "zootopia.jpg", link: "", video: "" },
+      15: { title: "15. Hihi!", text: "A mai meglepi egy mozijegy!\nMikor megyünk???😏", image: "zootopia.jpg", link: "", video: "" },
       16: { title: "16. Hupsz...", text: "Julisom, az élet nem mindig habostorta! Néha meg kell állni, és értékelni mindazt, ami megadatott. Nem szabad telhetetlennek lenni.", image: "", link: "", video: "" },
       17: { title: "17. nap", text: "Keep going!", image: "", link: "", video: "" },
       18: { title: "18. nap", text: "Keep going!", image: "", link: "", video: "" },
@@ -292,7 +305,7 @@
     };
 
   // Customizable: set how many doors can be opened (0 = use normal logic, 1-24 = open up to that day)
-  const OPEN_DAYS = 0; // e.g., set to 5 to open first 5 days, 24 to open all, 0 for normal logic
+  const OPEN_DAYS = 24; // e.g., set to 5 to open first 5 days, 24 to open all, 0 for normal logic
   // DEV mode: set to true to unlock all doors
   const DEV = false; // set to true for development
   const today = new Date();
@@ -375,46 +388,102 @@
     const data = contentData[day];
     // Special content for day 6
     if (day === 6) {
-      // Hide calendar and content
       document.getElementById('calendar').style.filter = 'blur(2px)';
       contentBox.style.display = 'none';
-      // Show overlay and populate
       const overlay = document.getElementById('santa-overlay');
       overlay.style.display = 'flex';
-      // Top: Santa gif
-      document.getElementById('santa-overlay-top').innerHTML = '<img src="santa-reindeer.gif" alt="Santa Reindeer">';
-      // Center: Santa image
+      document.getElementById('santa-overlay-top').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;width:100%"><h1 style="color:#fff;text-shadow:1px 1px 4px #b30000,0 0 2px #000;font-family:\'Comic Neue\',Arial,sans-serif;font-size:2em;margin:0 0 8px 0;">Boldog Mikulást!</h1><img src="santa-reindeer.gif" alt="Santa Reindeer"></div>';
       document.getElementById('santa-overlay-center').innerHTML = '<img id="santa-claus-img" src="santa-claus.png" alt="Santa Claus">';
-      // Bottom: juhuuu button
-      document.getElementById('santa-overlay-bottom').innerHTML = '<button id="juhuuu-btn">juhuuuu!!!</button>';
-      // Animate Santa image: scale and bounce in
+      document.getElementById('santa-overlay-bottom').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+          <button id="juhuuu-btn">juhuuuu!!!</button>
+            <button id="santa-fake-btn" style="margin-top:-20px;background:#888;color:#fff;font-family:'Comic Neue',Arial,sans-serif;font-size:1em;padding:8px 18px;border:none;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.10);cursor:pointer;">A Mikulás nem is létezik...</button>
+        </div>
+      `;
       setTimeout(() => {
         const santaImg = document.getElementById('santa-claus-img');
         if (santaImg) {
           santaImg.style.opacity = 1;
           santaImg.animate([
             { transform: 'scale(0.2)' },
-            { transform: 'scale(1.18)' },
-            { transform: 'scale(0.95,1.05)' },
-            { transform: 'scale(1.15,0.85)' },
-            { transform: 'scale(0.98,1.02)' },
+            { transform: 'scale(1.08)' },
+            { transform: 'scale(0.94)' },
+            { transform: 'scale(1.08)' },
+            { transform: 'scale(0.94)' },
+            { transform: 'scale(1.08)' },
+            { transform: 'scale(0.94)' },
+            { transform: 'scale(1.05)' },
+            { transform: 'scale(0.96)' },
             { transform: 'scale(1)' }
           ], {
-            duration: 700,
-            easing: 'cubic-bezier(.68,-0.55,.27,1.55)',
+            duration: 1800,
+            easing: 'cubic-bezier(.45,0,.55,1)',
             fill: 'forwards'
           });
         }
       }, 100);
-      // Button click: hide overlay and restore calendar
       setTimeout(() => {
         const btn = document.getElementById('juhuuu-btn');
         if (btn) {
           btn.onclick = () => {
             document.getElementById('santa-overlay').style.display = 'none';
             document.getElementById('calendar').style.filter = '';
-            // Show the day 6 text in the content box
             let html = `<h1>${contentData[6].title || '6. nap'}</h1><p>${contentData[6].text.replace(/\n/g, '<br>')}</p>`;
+            contentBox.innerHTML = html;
+            contentBox.style.display = 'block';
+          };
+        }
+        // Add handler for the "A Mikulás nem is létezik" button
+        const fakeBtn = document.getElementById('santa-fake-btn');
+        if (fakeBtn) {
+          fakeBtn.onclick = () => {
+            alert("Most miért kell mindent elrontani?:(\nNa puszi...");
+            setTimeout(() => {
+              window.close();
+            }, 300);
+          };
+        }
+      }, 200);
+      return;
+    }
+    // Special content for day 24
+    if (day === 24) {
+      document.getElementById('calendar').style.filter = 'blur(2px)';
+      contentBox.style.display = 'none';
+      const overlay = document.getElementById('xmas-overlay');
+      overlay.style.display = 'flex';
+      document.getElementById('xmas-overlay-top').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;width:100%"><h1 style="color:#fff;text-shadow:1px 1px 4px #b30000,0 0 2px #000;font-family:\'Comic Neue\',Arial,sans-serif;font-size:2em;margin:0 0 8px 0;">Boldog karácsonyt!</h1><img src="lights.gif" alt="Christmas Lights"></div>';
+      document.getElementById('xmas-overlay-center').innerHTML = '<img id="xmas-img" src="xmas.png" alt="Christmas">';
+      document.getElementById('xmas-overlay-bottom').innerHTML = '<button id="xmas-btn">juhuuuu!!!</button>';
+      setTimeout(() => {
+        const xmasImg = document.getElementById('xmas-img');
+        if (xmasImg) {
+          xmasImg.style.opacity = 1;
+          xmasImg.animate([
+            { transform: 'scale(0.2)' },
+            { transform: 'scale(1.08)' },
+            { transform: 'scale(0.94)' },
+            { transform: 'scale(1.08)' },
+            { transform: 'scale(0.94)' },
+            { transform: 'scale(1.08)' },
+            { transform: 'scale(0.94)' },
+            { transform: 'scale(1.05)' },
+            { transform: 'scale(0.96)' },
+            { transform: 'scale(1)' }
+          ], {
+            duration: 1800,
+            easing: 'cubic-bezier(.45,0,.55,1)',
+            fill: 'forwards'
+          });
+        }
+      }, 100);
+      setTimeout(() => {
+        const btn = document.getElementById('xmas-btn');
+        if (btn) {
+          btn.onclick = () => {
+            document.getElementById('xmas-overlay').style.display = 'none';
+            document.getElementById('calendar').style.filter = '';
+            let html = `<h1>${contentData[24].title || '24. nap'}</h1><p>${contentData[24].text.replace(/\n/g, '<br>')}</p>`;
             contentBox.innerHTML = html;
             contentBox.style.display = 'block';
           };
