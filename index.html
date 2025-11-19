@@ -182,9 +182,39 @@
       text-shadow: none;
     }
 
-    #content img {
-      max-width: 100%;
+    #content img,
+    #content-overlay-center img {
+      max-width: 90%;
+      max-height: 220px;
       border-radius: 6px;
+      display: block;
+      margin: 10px auto;
+      object-fit: contain;
+    }
+
+    #content-overlay-center {
+      margin-top: 10px;
+      padding: 16px;
+      background: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #content-overlay-center p {
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    #content-overlay-center h1 {
+      margin-top: -8px;
+      margin-bottom: -8px;
+      font-size: 1.3em;
+      font-family: 'Comic Neue', Arial, sans-serif;
+      font-weight: bold;
+      color: #000000;
+      text-shadow: none;
     }
     /* Santa Day 6 Overlay Styles */
   #santa-overlay {
@@ -250,7 +280,13 @@
   </div>
   <h1>🎄Julis Adventi Kalendáriuma🎄</h1>
   <div class="calendar" id="calendar"></div>
-  <div id="content"></div>
+  <!-- General Content Overlay (for all days except 6 and 24) -->
+  <div id="content-overlay" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.65);backdrop-filter:blur(2px);justify-content:center;align-items:center;flex-direction:column;">
+    <div id="content-overlay-center" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:90%;max-width:500px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.2);padding:24px 18px 18px 18px;position:relative;">
+      <!-- Content will be injected here -->
+    </div>
+    <div id="content-overlay-bottom" style="width:100%;display:flex;justify-content:center;align-items:center;margin-top:18px;"></div>
+  </div>
   <!-- Santa Day 6 Overlay (hidden by default) -->
   <div id="santa-overlay" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.65);backdrop-filter:blur(2px);justify-content:center;align-items:center;flex-direction:column;">
     <div id="santa-overlay-top" style="width:100%;display:flex;justify-content:center;align-items:center;margin-top:32px;margin-bottom:10px;"></div>
@@ -332,7 +368,9 @@
   }
 
   const calendar = document.getElementById("calendar");
-  const contentBox = document.getElementById("content");
+  const contentOverlay = document.getElementById("content-overlay");
+  const contentOverlayCenter = document.getElementById("content-overlay-center");
+  const contentOverlayBottom = document.getElementById("content-overlay-bottom");
 
   function showLockedMessage(day) {
     alert("Hékás! Csak ne olyan hevesen! Legyen miért várni a holnapot is!;)🎁");
@@ -372,13 +410,13 @@
           door.classList.add('bounce');
           setTimeout(() => door.classList.remove('bounce'), 300);
         }, 300);
-        // Toggle open door content for any available day
+        // Toggle open door content for any available day (now using overlay)
         const expectedHtml = `<h1>${contentData[day].title || (day + '. nap')}</h1><p>${contentData[day].text.replace(/\n/g, '<br>')}</p>` +
-          (contentData[day].image ? `<img src="${contentData[day].image}">` : '') +
+          (contentData[day].image ? `<img src="${contentData[day].image}" style="display:block;margin:10px auto;">` : '') +
           (contentData[day].link ? `<p><a href="${contentData[day].link}" target="_blank">Open link</a></p>` : '') +
           (contentData[day].video ? `<video controls src="${contentData[day].video}" style="width:100%"></video>` : '');
-        if (contentBox.style.display === "block" && contentBox.innerHTML.trim() === expectedHtml.trim()) {
-          contentBox.style.display = "none";
+        if (contentOverlay.style.display === "flex" && contentOverlayCenter.innerHTML.trim() === expectedHtml.trim()) {
+          contentOverlay.style.display = "none";
         } else {
           openDoor(day);
           localStorage.setItem(openedKey, '1');
@@ -394,7 +432,7 @@
     // Special content for day 6
     if (day === 6) {
       document.getElementById('calendar').style.filter = 'blur(2px)';
-      contentBox.style.display = 'none';
+      contentOverlay.style.display = 'none';
       const overlay = document.getElementById('santa-overlay');
       overlay.style.display = 'flex';
       document.getElementById('santa-overlay-top').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;width:100%"><h1 style="color:#fff;text-shadow:1px 1px 4px #b30000,0 0 2px #000;font-family:\'Comic Neue\',Arial,sans-serif;font-size:2em;margin:0 0 8px 0;">Boldog Mikulást!</h1><img src="santa-reindeer.gif" alt="Santa Reindeer"></div>';
@@ -433,9 +471,14 @@
           btn.onclick = () => {
             document.getElementById('santa-overlay').style.display = 'none';
             document.getElementById('calendar').style.filter = '';
+            // Show content overlay for day 6
             let html = `<h1>${contentData[6].title || '6. nap'}</h1><p>${contentData[6].text.replace(/\n/g, '<br>')}</p>`;
-            contentBox.innerHTML = html;
-            contentBox.style.display = 'block';
+            contentOverlayCenter.innerHTML = html;
+            contentOverlayBottom.innerHTML = '<button id="close-content-btn">Vissza a naptárhoz</button>';
+            contentOverlay.style.display = 'flex';
+            document.getElementById('close-content-btn').onclick = () => {
+              contentOverlay.style.display = 'none';
+            };
           };
         }
         // Add handler for the "A Mikulás nem is létezik" button
@@ -454,7 +497,7 @@
     // Special content for day 24
     if (day === 24) {
       document.getElementById('calendar').style.filter = 'blur(2px)';
-      contentBox.style.display = 'none';
+      contentOverlay.style.display = 'none';
       const overlay = document.getElementById('xmas-overlay');
       overlay.style.display = 'flex';
       document.getElementById('xmas-overlay-top').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;width:100%"><h1 style="color:#fff;text-shadow:1px 1px 4px #b30000,0 0 2px #000;font-family:\'Comic Neue\',Arial,sans-serif;font-size:2em;margin:0 0 8px 0;">Boldog karácsonyt!</h1><img src="lights2.gif" alt="Christmas Lights"></div>';
@@ -488,24 +531,33 @@
           btn.onclick = () => {
             document.getElementById('xmas-overlay').style.display = 'none';
             document.getElementById('calendar').style.filter = '';
+            // Show content overlay for day 24
             let html = `<h1>${contentData[24].title || '24. nap'}</h1><p>${contentData[24].text.replace(/\n/g, '<br>')}</p>`;
             if (contentData[24].image) html += `<img src="${contentData[24].image}" style="display:block;margin:10px auto;">`;
             if (contentData[24].link) html += `<p><a href="${contentData[24].link}" target="_blank">Open link</a></p>`;
             if (contentData[24].video) html += `<video controls src="${contentData[24].video}" style="width:100%"></video>`;
-            contentBox.innerHTML = html;
-            contentBox.style.display = 'block';
+            contentOverlayCenter.innerHTML = html;
+            contentOverlayBottom.innerHTML = '<button id="close-content-btn">Vissza a naptárhoz</button>';
+            contentOverlay.style.display = 'flex';
+            document.getElementById('close-content-btn').onclick = () => {
+              contentOverlay.style.display = 'none';
+            };
           };
         }
       }, 200);
       return;
     }
-    // Default content for other days
+    // Default content for other days (now as overlay)
     let html = `<h1>${data.title || (day + '. nap')}</h1><p>${data.text.replace(/\n/g, '<br>')}</p>`;
     if (data.image) html += `<img src="${data.image}" style="display:block;margin:10px auto;">`;
     if (data.link) html += `<p><a href="${data.link}" target="_blank">Open link</a></p>`;
     if (data.video) html += `<video controls src="${data.video}" style="width:100%"></video>`;
-    contentBox.innerHTML = html;
-    contentBox.style.display = "block";
+    contentOverlayCenter.innerHTML = html;
+    contentOverlayBottom.innerHTML = '<button id="close-content-btn">Vissza a naptárhoz</button>';
+    contentOverlay.style.display = "flex";
+    document.getElementById('close-content-btn').onclick = () => {
+      contentOverlay.style.display = 'none';
+    };
   }
 </script>
     <div id="loading-powered">powered by gabo | v2025.01.02 </div>
