@@ -426,10 +426,6 @@
                 <div class="g2048-score" id="g2048-score">Score: 0</div>
                 <div class="g2048-board" id="g2048-board"></div>
                 <div class="g2048-btns">
-                  <button class="g2048-btn" id="g2048-up">⬆️</button>
-                  <button class="g2048-btn" id="g2048-left">⬅️</button>
-                  <button class="g2048-btn" id="g2048-down">⬇️</button>
-                  <button class="g2048-btn" id="g2048-right">➡️</button>
                   <button class="g2048-btn" id="g2048-restart">🔄</button>
                 </div>
               </div>
@@ -626,6 +622,10 @@ window.addEventListener('DOMContentLoaded', () => {
         return true;
       }
       function restart() {
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem('g2048-highscore', highScore);
+        }
         score = 0;
         emptyBoard();
         addRandom();
@@ -655,6 +655,8 @@ window.addEventListener('DOMContentLoaded', () => {
           touchStartX = e.touches[0].clientX;
           touchStartY = e.touches[0].clientY;
         }
+        // Prevent sidebar swipe-to-close
+        e.stopPropagation();
       });
       gameDiv.addEventListener('touchend', function(e) {
         touchEndX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : 0;
@@ -670,6 +672,8 @@ window.addEventListener('DOMContentLoaded', () => {
             else move('up');
           }
         }
+        // Prevent sidebar swipe-to-close
+        e.stopPropagation();
       });
 
       restart();
