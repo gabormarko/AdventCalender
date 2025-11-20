@@ -413,19 +413,23 @@
         setTimeout(() => {
           door.classList.remove('scale-up');
           door.classList.add('bounce');
-          setTimeout(() => door.classList.remove('bounce'), 300);
-        }, 300);
-        // Toggle open door content for any available day (now using overlay)
-        const expectedHtml = `<h1>${contentData[day].title || (day + '. nap')}</h1><p>${contentData[day].text.replace(/\n/g, '<br>')}</p>` +
-          (contentData[day].image ? `<img src="${contentData[day].image}" style="display:block;margin:10px auto;">` : '') +
-          (contentData[day].link ? `<p><a href="${contentData[day].link}" target="_blank">Open link</a></p>` : '') +
-          (contentData[day].video ? `<video controls src="${contentData[day].video}" style="width:100%"></video>` : '');
-        if (contentOverlay.style.display === "flex" && contentOverlayCenter.innerHTML.trim() === expectedHtml.trim()) {
-          contentOverlay.style.display = "none";
-        } else {
-          openDoor(day);
-          localStorage.setItem(openedKey, '1');
-        }
+          setTimeout(() => {
+            door.classList.remove('bounce');
+            setTimeout(() => {
+              // Toggle open door content for any available day (now using overlay)
+              const expectedHtml = `<h1>${contentData[day].title || (day + '. nap')}</h1><p>${contentData[day].text.replace(/\n/g, '<br>')}</p>` +
+                (contentData[day].image ? `<img src="${contentData[day].image}" style="display:block;margin:10px auto;">` : '') +
+                (contentData[day].link ? `<p><a href="${contentData[day].link}" target="_blank">Open link</a></p>` : '') +
+                (contentData[day].video ? `<video controls src="${contentData[day].video}" style="width:100%"></video>` : '');
+              if (contentOverlay.style.display === "flex" && contentOverlayCenter.innerHTML.trim() === expectedHtml.trim()) {
+                contentOverlay.style.display = "none";
+              } else {
+                openDoor(day);
+                localStorage.setItem(openedKey, '1');
+              }
+            }, 300); // Extra 0.3s delay after bounce
+          }, 300); // Wait for bounce animation to finish
+        }, 300); // Wait for scale-up animation to finish
       });
     }
 
