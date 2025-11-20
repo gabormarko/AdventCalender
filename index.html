@@ -495,6 +495,8 @@ function initDrawerLogic() {
 
 // Wait for loading overlay to finish before enabling drawer
 window.addEventListener('DOMContentLoaded', () => {
+    // For testing: set OPEN_DAYS to a number to override the current day
+    const OPEN_DAYS = 0; // 0 = use real date, >0 = override day
   const loadingOverlay = document.getElementById('loading-overlay');
   if (!loadingOverlay) {
     initDrawerLogic();
@@ -549,25 +551,61 @@ window.addEventListener('DOMContentLoaded', () => {
   // Game selector buttons
   const selector = document.getElementById('game-selector');
   if (selector) {
+    // Lock logic
+    let currentDay;
+    if (typeof OPEN_DAYS !== 'undefined' && OPEN_DAYS !== 0) {
+      currentDay = OPEN_DAYS;
+    } else {
+      const today = new Date();
+      currentDay = today.getMonth() === 11 ? today.getDate() : 24;
+    }
+    const snakeBtn = selector.querySelector('.game-select-btn[data-game="snake"]');
+    const puzzleBtn = selector.querySelector('.game-select-btn[data-game="sliding"]');
+    if (snakeBtn) {
+      if (currentDay < 8) {
+        snakeBtn.disabled = true;
+        snakeBtn.style.background = '#888';
+        snakeBtn.style.color = '#ccc';
+        snakeBtn.innerHTML = '🔒 (12.08)';
+        snakeBtn.setAttribute('title', 'Elérhető: 8. nap');
+      } else {
+        snakeBtn.disabled = false;
+        snakeBtn.innerHTML = 'Snake';
+        snakeBtn.style.color = '#fff';
+      }
+    }
+    if (puzzleBtn) {
+      if (currentDay < 15) {
+        puzzleBtn.disabled = true;
+        puzzleBtn.style.background = '#888';
+        puzzleBtn.style.color = '#ccc';
+        puzzleBtn.innerHTML = '🔒 (12.15)';
+        puzzleBtn.setAttribute('title', 'Elérhető: 15. nap');
+      } else {
+        puzzleBtn.disabled = false;
+        puzzleBtn.innerHTML = 'Sliding Puzzle';
+        puzzleBtn.style.color = '#fff';
+      }
+    }
     selector.addEventListener('click', function(e) {
-      if (e.target.classList.contains('game-select-btn')) {
-        const game = e.target.getAttribute('data-game');
-        document.querySelectorAll('.game-select-btn').forEach(btn => {
-          btn.style.background = (btn.getAttribute('data-game') === game) ? '#b30000' : '#222';
-        });
-        document.getElementById('game-2048-container').style.display = (game === '2048') ? 'flex' : 'none';
-        document.getElementById('game-snake-container').style.display = (game === 'snake') ? 'flex' : 'none';
-        document.getElementById('game-sliding-container').style.display = (game === 'sliding') ? 'flex' : 'none';
-        // Init games if needed
-        if (game === '2048' && document.getElementById('g2048-board') && !document.getElementById('g2048-board').hasChildNodes()) {
-          g2048Init();
-        }
-        if (game === 'snake' && typeof window.snakeInit === 'function') {
-          window.snakeInit();
-        }
-        if (game === 'sliding' && typeof window.slidingInit === 'function') {
-          window.slidingInit();
-        }
+      const btn = e.target.closest('.game-select-btn');
+      if (!btn || btn.disabled) return;
+      const game = btn.getAttribute('data-game');
+      document.querySelectorAll('.game-select-btn').forEach(b => {
+        b.style.background = (b.getAttribute('data-game') === game) ? '#b30000' : '#222';
+      });
+      document.getElementById('game-2048-container').style.display = (game === '2048') ? 'flex' : 'none';
+      document.getElementById('game-snake-container').style.display = (game === 'snake') ? 'flex' : 'none';
+      document.getElementById('game-sliding-container').style.display = (game === 'sliding') ? 'flex' : 'none';
+      // Init games if needed
+      if (game === '2048' && document.getElementById('g2048-board') && !document.getElementById('g2048-board').hasChildNodes()) {
+        g2048Init();
+      }
+      if (game === 'snake' && typeof window.snakeInit === 'function') {
+        window.snakeInit();
+      }
+      if (game === 'sliding' && typeof window.slidingInit === 'function') {
+        window.slidingInit();
       }
     });
   }
@@ -1418,7 +1456,7 @@ window.addEventListener('DOMContentLoaded', () => {
       5: { title: "5. Grafilogika:)", text: "Ma egy kis feladványt kapsz, remélem ki tudod színesben nyomtatni.\n Viel Spaß!:)<br><a href='https://drive.google.com/file/d/1hQnBsPC27ZBde7qkPaNAs_L4dANv0pTG/view?usp=drive_link' target='_blank'>Nyomtatás</a>", image: "nonogramm.png", link: "", video: "" },
       6: { title: "6. Ho-ho-ho-hooo!🎅", text: "Remélem jól viselkedtél az évben, kedves Julis!\nSikerült megoldani a grafilogikát?:)", image: "", link: "", video: "" },
       7: { title: "7. Nagyon nagyon!", text: 'Bocsi, most rámjött. Legyen szép napod! Szeretlek!❤️ <br><img src="collage.jpg" style="max-width:100%;border-radius:8px;margin:10px 0;" /><br><iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/39C8c4BmdRAHLrj79mCsU1?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>', image: "", link: "", video: "" },
-      8: { title: "8. Bolondóra!", text: "Julis, ma sem maradhat el a bolondóra! Bukfencezgess párat a lakásban:) Ha készül róla videó, szívesen veszem:)!", image: "bukfenc.gif", link: "", video: "" },
+      8: { title: "8. Bolondóra!", text: "Először is hajrá ma a vizsgán!:)\n Viszont Julis, ma sem maradhat el a bolondóra! Bukfencezgess párat a lakásban:) Ha készül róla videó, szívesen veszem:)!", image: "bukfenc.gif", link: "", video: "" },
       9: { title: "9. Egy kis motiváció reggelre!", text: "Gyerünk Julis, ügyes leszel ma!🤘\nRopjad neki!", image: "", link: "", video: "fish.mp4" },
       10: { title: "10. A mai meglepetés pedig...", text: "... én leszek!:)\nNa jó, ennyire azért nem kell repdesned az örömtől. Végre újra találkozunk, váááááááááá!", image: "lederhose.jpg", link: "", video: "" },
       11: { title: "11. Futááás", text: "Julisom, ma olyan résztávokat futunk, amilyet csak szeretnél;)", image: "run.jpeg", link: "", video: "" },
@@ -1438,7 +1476,7 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
   // Customizable: set how many doors can be opened (0 = use normal logic, 1-24 = open up to that day)
-  const OPEN_DAYS = 20; // e.g., set to 5 to open first 5 days, 24 to open all, 0 for normal logic
+  const OPEN_DAYS = 10; // e.g., set to 5 to open first 5 days, 24 to open all, 0 for normal logic
   // DEV mode: set to true to unlock all doors
   const DEV = false; // set to true for development
   const today = new Date();
