@@ -162,7 +162,7 @@
       padding: 16px;
       background: white;
       border-radius: 8px;
-      width: 80%;
+      width: 90%;
       max-width: 500px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       display: none;
@@ -185,7 +185,7 @@
     #content img,
     #content-overlay-center img,
     #content-overlay-center video {
-      width: 96%;
+      width: 100%;
       border-radius: 6px;
       display: block;
       margin: 10px auto;
@@ -194,20 +194,20 @@
 
     #content-overlay-center {
       position: fixed;
-      top: 42%;
+      top: 48%;
       left: 50%;
-      transform: translate(-50%, -58%);
+      transform: translate(-50%, -52%);
       margin: 0;
       padding: 32px 16px 32px 16px;
       background: white;
       border-radius: 8px;
-      width: 50vw;
+      width: 60vw;
       max-width: 500px;
       min-width: 280px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       display: block;
       overflow-y: auto;
-      max-height: 70vh;
+      max-height: 76vh;
     }
     #content-overlay-center p {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -552,7 +552,7 @@
     }
     // Default content for other days (now as overlay)
     let html = `<h1>${data.title || (day + '. nap')}</h1><p>${data.text.replace(/\n/g, '<br>')}</p>`;
-    if (data.image) html += `<img src="${data.image}" style="display:block;margin:10px auto;width:90%;height:auto;">`;
+    if (data.image) html += `<img src="${data.image}" style="display:block;margin:10px auto;width:100%;height:auto;">`;
     if (data.link) html += `<p><a href="${data.link}" target="_blank">Open link</a></p>`;
     if (data.video) html += `<video controls src="${data.video}" style="width:100%"></video>`;
     contentOverlayCenter.innerHTML = html;
