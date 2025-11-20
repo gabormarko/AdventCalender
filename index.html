@@ -322,7 +322,84 @@
 </script>
 
 <body>
-    <!-- Snow overlay canvas -->
+    <!-- Side drawer button (hidden until loading overlay is gone) -->
+    <button id="drawer-btn" aria-label="Open menu" style="position:fixed;top:4px;left:4px;z-index:10010;width:38px;height:38px;border:none;background:none;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.13);display:flex;align-items:center;justify-content:center;cursor:pointer;display:none;">
+      <span style="display:block;width:22px;height:3px;background:#ece3e3;border-radius:2px;box-shadow:0 7px 0 0 #ece3e3,0 14px 0 0 #ece3e3;"></span>
+    </button>
+    <!-- Side drawer overlay -->
+    <div id="drawer-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:10009;"></div>
+    <!-- Side drawer panel -->
+    <nav id="drawer-panel" style="position:fixed;top:0;left:0;height:100vh;width:82vw;max-width:340px;background:#fff;box-shadow:2px 0 16px rgba(0,0,0,0.18);z-index:10011;transform:translateX(-100%);transition:transform 0.32s cubic-bezier(.7,0,.3,1);border-top-right-radius:18px;border-bottom-right-radius:18px;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 18px 8px 18px;">
+        <span style="font-family:'Comic Neue',Arial,sans-serif;font-size:1.2em;color:#b30000;font-weight:bold;">Menü</span>
+        <button id="drawer-close" aria-label="Close menu" style="background:none;border:none;font-size:2em;line-height:1;color:#b30000;cursor:pointer;">&times;</button>
+      </div>
+      <div style="padding:0 18px 18px 18px;font-family:'Comic Neue',Arial,sans-serif;font-size:1em;color:#222;">
+        <p>Ez egy mobilbarát oldalsó menü.<br>Ide jöhet információ, beállítások, vagy bármi más tartalom.</p>
+        <ul style="padding-left:1.2em;">
+          <li>Info</li>
+          <li>Beállítások</li>
+          <li>Kapcsolat</li>
+        </ul>
+      </div>
+    </nav>
+
+<script>
+// Side drawer logic (mobile friendly)
+function initDrawerLogic() {
+  const btn = document.getElementById('drawer-btn');
+  if (btn) btn.style.display = 'flex'; // Show the button only after loading overlay is gone
+  const panel = document.getElementById('drawer-panel');
+  const overlay = document.getElementById('drawer-overlay');
+  const closeBtn = document.getElementById('drawer-close');
+  function openDrawer() {
+    panel.style.transform = 'translateX(0)';
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    panel.style.transform = 'translateX(-100%)';
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  btn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  // Swipe to close (mobile)
+  let startX = null;
+  panel.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) startX = e.touches[0].clientX;
+  });
+  panel.addEventListener('touchmove', e => {
+    if (startX !== null && e.touches.length === 1) {
+      const dx = e.touches[0].clientX - startX;
+      if (dx < -60) closeDrawer();
+    }
+  });
+  panel.addEventListener('touchend', () => { startX = null; });
+}
+
+// Wait for loading overlay to finish before enabling drawer
+window.addEventListener('DOMContentLoaded', () => {
+  const loadingOverlay = document.getElementById('loading-overlay');
+  if (!loadingOverlay) {
+    initDrawerLogic();
+    return;
+  }
+  const observer = new MutationObserver(() => {
+    if (loadingOverlay.style.display === 'none' || loadingOverlay.style.opacity === '0') {
+      initDrawerLogic();
+      observer.disconnect();
+    }
+  });
+  observer.observe(loadingOverlay, { attributes: true, attributeFilter: ['style'] });
+  // Fallback: if overlay is already hidden
+  if (loadingOverlay.style.display === 'none' || loadingOverlay.style.opacity === '0') {
+    initDrawerLogic();
+    observer.disconnect();
+  }
+});
+</script>
     <canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:10002;"></canvas>
     <div id="loading-overlay">
     <span class="loading-message" style="font-weight:bold;">Julis Adventi Kalendáriuma</span>
