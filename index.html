@@ -437,12 +437,12 @@
                 </div>
               </div>
               <div id="game-snake-container" style="width:100%;display:none;justify-content:center;align-items:center;">
-                <div id="game-snake" style="margin:0 auto;padding:8px 0;width:240px;">
+                <div id="game-snake" style="margin:0 auto;padding:8px 0;width:320px;">
                   <!-- Snake game will be rendered here -->
                 </div>
               </div>
               <div id="game-sliding-container" style="width:100%;display:none;justify-content:center;align-items:center;">
-                <div id="game-sliding" style="margin:0 auto;padding:8px 0;width:240px;">
+                <div id="game-sliding" style="margin:0 auto;padding:8px 0;width:320px;">
                   <!-- Sliding Puzzle game will be rendered here -->
                 </div>
               </div>
@@ -737,8 +737,8 @@ window.addEventListener('DOMContentLoaded', () => {
     // Prevent multiple initializations
     if (snakeDiv.getAttribute('data-initialized')) return;
     snakeDiv.setAttribute('data-initialized', '1');
-    const snakeGridSize = 14;
-    const snakeBox = 14; // 14*14 = 196px, fits in 220px with margin
+    const snakeGridSize = 12;
+    const snakeBox = 23; // 14*14 = 196px, fits in 220px with margin
     const snakeCanvasSize = snakeGridSize * snakeBox;
     snakeDiv.innerHTML =
       `<div class="snake-score" style="text-align:center;font-size:1em;margin:6px 0 2px 0;color:#b30000;font-weight:bold;">Score: <span id="snake-score">0</span> | Best: <span id="snake-best">0</span></div>` +
@@ -932,12 +932,25 @@ window.addEventListener('DOMContentLoaded', () => {
     // Prevent multiple initializations
     if (slidingDiv.getAttribute('data-initialized')) return;
     slidingDiv.setAttribute('data-initialized', '1');
-    const gridSize = 4;
-    const tileSize = 50;
-    const gap = 4;
+    const gridSize = 3;
+    const tileSize = 90;
+    const gap = 2;
     const canvasSize = gridSize * tileSize + (gridSize - 1) * gap;
+    // First mode: classic numbers, then images
+    const modes = [
+      { type: 'numbers' },
+      { type: 'image', src: 'puz2.jpg' },
+      { type: 'image', src: 'puz3.jpg' },
+      { type: 'image', src: 'puz1.jpg' }
+    ];
+    let modeIndex = parseInt(localStorage.getItem('sliding-mode-idx')||'0',10) % modes.length;
+    let img = null;
+    if (modes[modeIndex].type === 'image') {
+      img = new window.Image();
+      img.src = modes[modeIndex].src;
+    }
     let board = [];
-    let empty = {x: 3, y: 3};
+    let empty = {x: gridSize - 1, y: gridSize - 1};
     let moves = 0;
     let best = parseInt(localStorage.getItem('sliding-best')||'0',10);
     let gameOver = false;
@@ -947,15 +960,14 @@ window.addEventListener('DOMContentLoaded', () => {
       for (let y = 0; y < gridSize; y++) {
         let row = [];
         for (let x = 0; x < gridSize; x++) {
-          if (x === 3 && y === 3) row.push(0);
+          if (x === gridSize - 1 && y === gridSize - 1) row.push(0);
           else row.push(n++);
         }
         board.push(row);
       }
-      empty = {x: 3, y: 3};
+      empty = {x: gridSize - 1, y: gridSize - 1};
     }
     function shuffleBoard() {
-      // Do a series of random valid moves to ensure solvability
       makeBoard();
       let lastDir = null;
       const dirs = [
@@ -968,13 +980,11 @@ window.addEventListener('DOMContentLoaded', () => {
         let possible = dirs.filter((d, idx) => {
           let nx = empty.x + d.x, ny = empty.y + d.y;
           if (nx < 0 || nx >= gridSize || ny < 0 || ny >= gridSize) return false;
-          // Don't undo last move
           if (lastDir !== null && (d.x === -lastDir.x && d.y === -lastDir.y)) return false;
           return true;
         });
         let dir = possible[Math.floor(Math.random() * possible.length)];
         let nx = empty.x + dir.x, ny = empty.y + dir.y;
-        // Swap
         board[empty.y][empty.x] = board[ny][nx];
         board[ny][nx] = 0;
         empty = {x: nx, y: ny};
@@ -985,7 +995,7 @@ window.addEventListener('DOMContentLoaded', () => {
       let n = 1;
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
-          if (x === 3 && y === 3) {
+          if (x === gridSize - 1 && y === gridSize - 1) {
             if (board[y][x] !== 0) return false;
           } else {
             if (board[y][x] !== n++) return false;
@@ -996,22 +1006,39 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     function draw() {
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.font = 'bold 1.2em Comic Neue, Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
           let val = board[y][x];
           let px = x * (tileSize + gap);
           let py = y * (tileSize + gap);
           if (val !== 0) {
-            ctx.fillStyle = '#f2b179';
-            ctx.fillRect(px, py, tileSize, tileSize);
-            ctx.fillStyle = '#b30000';
-            ctx.fillRect(px+2, py+2, tileSize-4, tileSize-4);
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 1.2em Comic Neue, Arial';
-            ctx.fillText(val, px + tileSize/2, py + tileSize/2);
+            if (modes[modeIndex].type === 'image' && img && img.complete) {
+              // Draw image tile
+              let tileNum = val - 1;
+              let sx = (tileNum % gridSize) * (img.width / gridSize);
+              let sy = Math.floor(tileNum / gridSize) * (img.height / gridSize);
+              let sw = img.width / gridSize;
+              let sh = img.height / gridSize;
+              ctx.save();
+              ctx.beginPath();
+              ctx.moveTo(px, py);
+              ctx.rect(px, py, tileSize, tileSize);
+              ctx.closePath();
+              ctx.clip();
+              ctx.drawImage(img, sx, sy, sw, sh, px, py, tileSize, tileSize);
+              ctx.restore();
+            } else {
+              // Draw number tile
+              ctx.fillStyle = '#f2b179';
+              ctx.fillRect(px, py, tileSize, tileSize);
+              ctx.fillStyle = '#b30000';
+              ctx.fillRect(px+2, py+2, tileSize-4, tileSize-4);
+              ctx.fillStyle = '#fff';
+              ctx.font = 'bold 2em Comic Neue, Arial';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(val, px + tileSize/2, py + tileSize/2);
+            }
           } else {
             ctx.fillStyle = '#222';
             ctx.fillRect(px, py, tileSize, tileSize);
@@ -1024,7 +1051,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     function tryMove(x, y) {
       if (gameOver) return;
-      // Only allow moving tiles adjacent to empty
       if ((Math.abs(x - empty.x) + Math.abs(y - empty.y)) === 1) {
         board[empty.y][empty.x] = board[y][x];
         board[y][x] = 0;
@@ -1039,8 +1065,24 @@ window.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('sliding-best', best);
           }
           updateScore();
-          setTimeout(()=>{alert('Congratulations! You solved it!');}, 100);
+          setTimeout(()=>{
+            alert('Ügyi-bügyi!!!🥰');
+            // Next image for next game
+            nextImageAndRestart();
+          }, 100);
         }
+      }
+    }
+    function nextImageAndRestart() {
+      modeIndex = (modeIndex + 1) % modes.length;
+      localStorage.setItem('sliding-mode-idx', modeIndex);
+      if (modes[modeIndex].type === 'image') {
+        img = new window.Image();
+        img.src = modes[modeIndex].src;
+        img.onload = restart;
+      } else {
+        img = null;
+        restart();
       }
     }
     function restart() {
@@ -1048,7 +1090,12 @@ window.addEventListener('DOMContentLoaded', () => {
       gameOver = false;
       shuffleBoard();
       updateScore();
-      draw();
+      if (modes[modeIndex].type === 'image' && img) {
+        if (img.complete) draw();
+        else img.onload = draw;
+      } else {
+        draw();
+      }
     }
     slidingDiv.innerHTML =
       `<div class="sliding-score" style="text-align:center;font-size:1em;margin:6px 0 2px 0;color:#b30000;font-weight:bold;">Moves: <span id="sliding-moves">0</span> | Best: <span id="sliding-best">-</span></div>` +
@@ -1074,7 +1121,6 @@ window.addEventListener('DOMContentLoaded', () => {
         tryMove(x, y);
       }
     });
-    // Keyboard controls (arrow keys)
     slidingDiv.tabIndex = 0;
     slidingDiv.onkeydown = e => {
       if (gameOver) return;
@@ -1085,7 +1131,6 @@ window.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'ArrowRight' && empty.x > 0) { tryMove(empty.x - 1, empty.y); moved = true; }
       if (moved) e.preventDefault();
     };
-    // Touch swipe controls
     let sx=0,sy=0,ex=0,ey=0;
     canvas.addEventListener('touchstart',e=>{
       if (e.touches.length===1) {
@@ -1108,8 +1153,12 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       e.stopPropagation();
     });
-    document.getElementById('sliding-restart').onclick = () => restart();
-    restart();
+    document.getElementById('sliding-restart').onclick = () => nextImageAndRestart();
+    if (modes[modeIndex].type === 'image' && img && !img.complete) {
+      img.onload = restart;
+    } else {
+      restart();
+    }
     setTimeout(()=>{slidingDiv.focus();},200);
   };
 
