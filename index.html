@@ -322,6 +322,8 @@
 </script>
 
 <body>
+    <!-- Snow overlay canvas -->
+    <canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:10002;"></canvas>
     <div id="loading-overlay">
     <span class="loading-message" style="font-weight:bold;">Julis Adventi Kalendáriuma</span>
     <img src="app-icon-me.png" alt="Loading..." style="width:200px;height:200px;margin-bottom:20px;">
@@ -397,6 +399,66 @@
     }
     runTypewriter();
   });
+// Simple snow effect overlay
+window.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('snow-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  function resizeCanvas() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  // Snowflake properties
+  const flakes = [];
+  const flakeCount = Math.max(60, Math.floor(width * height / 3500));
+  for (let i = 0; i < flakeCount; i++) {
+    flakes.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: 1.2 + Math.random() * 2.2,
+      d: 0.7 + Math.random() * 1.3,
+      a: Math.random() * Math.PI * 2,
+      speed: 0.6 + Math.random() * 1.2
+    });
+  }
+  function drawSnow() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = '#fff';
+    flakes.forEach(f => {
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+  function updateSnow() {
+    for (let f of flakes) {
+      f.y += f.speed * f.d;
+      f.x += Math.sin(f.a) * 0.6;
+      f.a += 0.01 + Math.random() * 0.01;
+      if (f.y > height + 4) {
+        f.y = -4;
+        f.x = Math.random() * width;
+      }
+      if (f.x > width + 4) f.x = -4;
+      if (f.x < -4) f.x = width + 4;
+    }
+  }
+  function animateSnow() {
+    updateSnow();
+    drawSnow();
+    requestAnimationFrame(animateSnow);
+  }
+  animateSnow();
+});
 </script>
 
 <script>
