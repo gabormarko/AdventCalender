@@ -497,6 +497,11 @@ function initDrawerLogic() {
 window.addEventListener('DOMContentLoaded', () => {
       // Early morning swim message
       function showEarlySwimMessage() {
+        // Only show once per day
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const lastShown = localStorage.getItem('early-swim-last-shown');
+        if (lastShown === todayStr) return;
+        localStorage.setItem('early-swim-last-shown', todayStr);
         // Create overlay
         const msgOverlay = document.createElement('div');
         msgOverlay.style.position = 'fixed';
@@ -520,7 +525,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const hour = now.getHours();
         const min = now.getMinutes();
-        if ((hour === 4 && min >= 30) || (hour === 5 && min < 50) || (hour === 17 && min < 55)) {
+        if ((hour === 4 && min >= 30) || (hour === 5 && min < 50) || (hour === 17 && min < 57)) {
           return true;
         }
         return false;
