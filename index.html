@@ -556,7 +556,7 @@ window.addEventListener('DOMContentLoaded', () => {
           }
           boardDiv.appendChild(row);
         }
-        scoreDiv.textContent = 'Score: ' + score + ' | High: ' + highScore;
+        scoreDiv.textContent = 'Score: ' + score + ' | Best: ' + highScore;
       }
       function move(dir) {
         let moved = false;
@@ -639,15 +639,40 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('g2048-right').onclick = () => move('right');
       document.getElementById('g2048-restart').onclick = () => restart();
       // Keyboard events
-      document.getElementById('game-2048').tabIndex = 0;
-      document.getElementById('game-2048').onkeydown = e => {
+      const gameDiv = document.getElementById('game-2048');
+      gameDiv.tabIndex = 0;
+      gameDiv.onkeydown = e => {
         if (e.key === 'ArrowUp') move('up');
         if (e.key === 'ArrowDown') move('down');
         if (e.key === 'ArrowLeft') move('left');
         if (e.key === 'ArrowRight') move('right');
       };
-      draw();
-      // Only restart on first load or manual click
+
+      // Touch swipe events for mobile
+      let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
+      gameDiv.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }
+      });
+      gameDiv.addEventListener('touchend', function(e) {
+        touchEndX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : 0;
+        touchEndY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : 0;
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
+        if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+          if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 0) move('right');
+            else move('left');
+          } else {
+            if (dy > 0) move('down');
+            else move('up');
+          }
+        }
+      });
+
+      restart();
     }
   // Only initialize when accordion is opened
   const egyetemreHeader = Array.from(headers).find(h => h.textContent.includes('Egyetemre'));
@@ -694,7 +719,7 @@ window.addEventListener('DOMContentLoaded', () => {
     <span class="loading-message" style="font-weight:bold;">Julis Adventi Kalendáriuma</span>
     <img src="app-icon-me.png" alt="Loading..." style="width:200px;height:200px;margin-bottom:20px;">
     <span class="loading-message" id="hihi-loading" style="font-weight:normal;"><span id="hihi-dots" style="display:inline-block;min-width:1.5em;padding-left:0;"></span></span>
-    <div id="loading-powered-overlay">powered by gabo | v2025.01.02 </div>
+    <div id="loading-powered-overlay">powered by gabo ©2025 | v03.05</div>
   </div>
   <div class="title-bg"><h1>🎄Julis Adventi Kalendáriuma🎄</h1></div>
   <div class="calendar" id="calendar"></div>
@@ -1072,8 +1097,8 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('close-content-btn').onclick = () => {
       contentOverlay.style.display = 'none';
     };
-            };
+};
 </script>
-    <div id="loading-powered" style="position:fixed;bottom:8px;left:0;width:100vw;text-align:center;font-size:0.8em;color:#fff;opacity:0.7;letter-spacing:1px;font-family:'Fira Mono','Consolas','Menlo','Monaco',monospace;pointer-events:none;z-index:100;">powered by gabo | v2025.01.02 </div>
+    <div id="loading-powered" style="position:fixed;bottom:8px;left:0;width:100vw;text-align:center;font-size:0.8em;color:#fff;opacity:0.7;letter-spacing:1px;font-family:'Fira Mono','Consolas','Menlo','Monaco',monospace;pointer-events:none;z-index:100;">powered by gabo ©2025 | v03.05  </div>
 </body>
 </html>
