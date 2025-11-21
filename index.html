@@ -14,6 +14,12 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   <style>
+@keyframes scaleUpBounce {
+  0% { transform: scale(0.1); }
+  60% { transform: scale(1.15); }
+  80% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
 
   .title-bg {
     display: flex;
@@ -455,7 +461,9 @@
             <p style="margin-top:6px;">Kérdés, javaslat esetén a írj bátran a gabo fejlesztőcsapatnak!<br>Állunk rendelkezésedre!😇<br><br>
               <button id="help-reveal-btn" style="display:block;margin:-8px auto 10px auto;padding:7px 18px;font-family:'Comic Neue',Arial,sans-serif;font-size:1em;color:#fff;background:#b30000;border:none;border-radius:8px;box-shadow:0 2px 6px #0002;cursor:pointer;">Jó lett az app!😎</button>
               <div id="help-reveal" style="display:none;">
-                <img id="help-blur-img" src="media/gabo3.jpg" alt="gabo" style="width:250px;border-radius:14px;margin-top:0px;margin-bottom:4px;display:block;margin-left:auto;margin-right:auto;object-fit:cover;box-shadow:0 2px 8px rgba(179,0,0,0.10);filter:blur(12px);transition:filter 0.5s;" />
+                <div id="help-typewriter-box" style="width:250px;height:188px;border-radius:14px;margin-top:0px;margin-bottom:4px;display:flex;align-items:center;justify-content:center;margin-left:auto;margin-right:auto;object-fit:cover;box-shadow:0 2px 8px rgba(179,0,0,0.10);background:#fffbe8;color:#b30000;font-family:'Comic Neue',Arial,sans-serif;font-size:1.8em;text-align:center;transition:opacity 0.5s;"></div>
+                <img id="help-blur-img" src="media/gabo3.jpg" alt="gabo" style="width:250px;border-radius:14px;margin-top:0px;margin-bottom:4px;display:none;margin-left:auto;margin-right:auto;object-fit:cover;box-shadow:0 2px 8px rgba(179,0,0,0.10);transition:filter 0.5s;" />
+                                <!-- The image will animate in with scaleUpBounce -->
                 <audio id="help-audio" controls style="margin-top:2px;width:100%;max-width:300px;">
                   <source src="media/outro.mp3" type="audio/mpeg"> 
                 </audio> 
@@ -475,26 +483,87 @@
                 var btn = document.getElementById('help-reveal-btn');
                 var reveal = document.getElementById('help-reveal');
                 var img = document.getElementById('help-blur-img');
+                var box = document.getElementById('help-typewriter-box');
                 var audio = document.getElementById('help-audio');
+                // Typewriter effect for 'köszi...' cycling
+                var typewriterText = 'köszi...';
+                var typewriterCharIdx = 0;
+                var typewriterTimeout = null;
+                var typewriterDelay = 120;
+                var typewriterPause = 700;
+                function typewriterStep() {
+                  if (!box) return;
+                  if (typewriterCharIdx <= typewriterText.length) {
+                    box.textContent = typewriterText.slice(0, typewriterCharIdx);
+                    typewriterCharIdx++;
+                    typewriterTimeout = setTimeout(typewriterStep, typewriterDelay);
+                  } else {
+                    // Pause, then clear and restart
+                    typewriterTimeout = setTimeout(function() {
+                      box.textContent = '';
+                      typewriterCharIdx = 0;
+                      typewriterStep();
+                    }, typewriterPause);
+                  }
+                }
+                function startTypewriter() {
+                  typewriterCharIdx = 0;
+                  if (typewriterTimeout) clearTimeout(typewriterTimeout);
+                  typewriterStep();
+                }
+                function stopTypewriter() {
+                  if (typewriterTimeout) clearTimeout(typewriterTimeout);
+                  if (box) box.textContent = '';
+                }
                 if (btn && reveal) {
                   btn.addEventListener('click', function() {
                     reveal.style.display = 'block';
+                    if (box && img) {
+                      box.style.display = 'flex';
+                      img.style.display = 'none';
+                      startTypewriter();
+                    }
                   });
                 }
-                if (audio && img) {
-                  function updateBlur() {
-                    if (audio.currentTime < 40) {
-                      img.style.filter = 'blur(12px)';
+                if (audio && img && box) {
+                  let bounceTimeout = null;
+                  let lastState = 'box'; // 'box' or 'img'
+                  function animateImageDrop() {
+                    img.style.animation = 'none';
+                    img.style.transform = 'scale(0.1)';
+                    // Force reflow to restart animation
+                    void img.offsetWidth;
+                    img.style.animation = 'scaleUpBounce 5s cubic-bezier(.7,0,.3,1)';
+                    // After 5s, ensure image stays at full size
+                    if (bounceTimeout) clearTimeout(bounceTimeout);
+                    bounceTimeout = setTimeout(function() {
+                      img.style.animation = 'none';
+                      img.style.transform = 'scale(1)';
+                    }, 5000);
+                  }
+                  function updateBoxAndImg() {
+                    if (audio.currentTime < 52) {
+                      if (lastState !== 'box') {
+                        box.style.display = 'flex';
+                        img.style.display = 'none';
+                        if (!typewriterTimeout) startTypewriter();
+                        lastState = 'box';
+                      }
                     } else {
-                      img.style.filter = 'none';
+                      if (lastState !== 'img') {
+                        box.style.display = 'none';
+                        img.style.display = 'block';
+                        animateImageDrop();
+                        stopTypewriter();
+                        lastState = 'img';
+                      }
                     }
                   }
-                  audio.addEventListener('timeupdate', updateBlur);
-                  audio.addEventListener('play', updateBlur);
-                  audio.addEventListener('seeked', updateBlur);
-                  audio.addEventListener('ended', function() { img.style.filter = 'none'; });
-                  // In case user starts playing from >40s
-                  audio.addEventListener('loadedmetadata', updateBlur);
+                  audio.addEventListener('timeupdate', updateBoxAndImg);
+                  audio.addEventListener('play', updateBoxAndImg);
+                  audio.addEventListener('seeked', updateBoxAndImg);
+                  audio.addEventListener('ended', function() { box.style.display = 'none'; img.style.display = 'block'; animateImageDrop(); stopTypewriter(); lastState = 'img'; });
+                  audio.addEventListener('loadedmetadata', updateBoxAndImg);
                 }
               })();
             </script>
