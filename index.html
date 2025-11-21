@@ -315,7 +315,35 @@
     margin-bottom: 32px;
   }
 
+@keyframes epicFlash {
+  0%, 100% { filter: brightness(1); }
+  10%, 30%, 50%, 70%, 90% { filter: brightness(2.7); }
+  20%, 40%, 60%, 80% { filter: brightness(0.5); }
+}
+.epic-flash {
+  animation: epicFlash 0.5s linear 1;
+}
 
+@keyframes epicBounce {
+  0% { transform: scale(1); }
+  20% { transform: scale(1.35, 0.65); }
+  40% { transform: scale(0.75, 1.25); }
+  60% { transform: scale(1.25, 0.75); }
+  80% { transform: scale(0.98, 1.02); }
+  100% { transform: scale(1); }
+}
+.epic-bounce {
+  animation: epicBounce 0.7s cubic-bezier(.36,.07,.19,.97) 1;
+}
+
+@keyframes epicPulseScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.13); }
+  100% { transform: scale(1); }
+}
+.epic-pulse-scale {
+  animation: epicPulseScale 1.2s cubic-bezier(.4,0,.6,1) infinite;
+}
   </style>
 </head>
 
@@ -550,9 +578,6 @@
                 }
 
                 // Main logic: always reflect audio.currentTime
-                let epicAnimInterval = null;
-                let epicAnimTimeout = null;
-
                 function updateBoxAndImg(force) {
                   if (!audio || !img || !box) return;
                   // Track last state to ensure typewriter always restarts when switching from image to text
@@ -569,13 +594,12 @@
                     // Always clear image animation state
                     img.style.animation = 'none';
                     img.classList.remove('epic-shake');
+                    img.classList.remove('epic-pulse-scale');
                     img.style.opacity = '0';
                     img.style.filter = 'blur(18px) brightness(1.7)';
                     img.style.boxShadow = '0 0 0 0 #fff0';
                     updateBoxAndImg.lastState = 'typewriter';
                     if (bounceTimeout) clearTimeout(bounceTimeout);
-                    if (epicAnimInterval) { clearInterval(epicAnimInterval); epicAnimInterval = null; }
-                    if (epicAnimTimeout) { clearTimeout(epicAnimTimeout); epicAnimTimeout = null; }
                   } else {
                     // Show image
                     box.style.display = 'none';
@@ -587,50 +611,46 @@
                       // Just switched: reset to initial state
                       img.style.animation = 'none';
                       img.classList.remove('epic-shake');
+                      img.classList.remove('epic-pulse-scale');
                       img.style.opacity = '0';
                       img.style.filter = 'blur(18px) brightness(1.7)';
                       img.style.boxShadow = '0 0 0 0 #fff0';
                     } else if (since < 3.0) {
-                      // Epic drop + shake (first 3s)
-                      img.style.animation = 'epicDropFade 3s cubic-bezier(.7,0,.3,1), epicShake 1.1s cubic-bezier(.36,.07,.19,.97)';
-                      img.classList.add('epic-shake');
+                      // Epic drop + flash + bounce + shake + pulse (chained)
+                      img.style.animation = 'epicDropFade 2.2s cubic-bezier(.7,0,.3,1)';
+                      setTimeout(function() {
+                        img.style.animation = 'epicFlash 0.5s linear';
+                        setTimeout(function() {
+                          img.style.animation = 'epicBounce 0.7s cubic-bezier(.36,.07,.19,.97)';
+                          setTimeout(function() {
+                            img.style.animation = 'epicShake 1.1s cubic-bezier(.36,.07,.19,.97)';
+                            setTimeout(function() {
+                              img.style.animation = 'epicPulseScale 1.2s cubic-bezier(.4,0,.6,1) infinite';
+                            }, 1100); // after shake
+                          }, 700); // after bounce
+                        }, 500); // after flash
+                      }, 2200); // after drop
+                      img.classList.add('epic-shake');                      
+                      
                       img.style.opacity = '1';
                       img.style.filter = '';
                       img.style.boxShadow = '';
-                      if (epicAnimInterval) { clearInterval(epicAnimInterval); epicAnimInterval = null; }
-                      if (epicAnimTimeout) { clearTimeout(epicAnimTimeout); epicAnimTimeout = null; }
-                      // Remove shake after 1.1s
-                      if (!img._shakeTimeout) {
-                        img._shakeTimeout = setTimeout(function() {
-                          img.classList.remove('epic-shake');
-                          img._shakeTimeout = null;
-                        }, 1100);
-                      }
+                      // Remove shake class after 1.1s
+                      if (bounceTimeout) clearTimeout(bounceTimeout);
+                      bounceTimeout = setTimeout(function() {
+                        img.classList.remove('epic-shake');
+                      }, 1100);                    
                     } else {
-                      // After 3s, repeat the same animation every 5s
-                      if (!epicAnimInterval) {
-                        // Immediately trigger the animation
-                        function triggerEpicAnim() {
-                          img.style.animation = 'epicDropFade 3s cubic-bezier(.7,0,.3,1), epicShake 1.1s cubic-bezier(.36,.07,.19,.97)';
-                          img.classList.add('epic-shake');
-                          img.style.opacity = '1';
-                          img.style.filter = '';
-                          img.style.boxShadow = '';
-                          if (img._shakeTimeout) clearTimeout(img._shakeTimeout);
-                          img._shakeTimeout = setTimeout(function() {
-                            img.classList.remove('epic-shake');
-                            img._shakeTimeout = null;
-                          }, 1100);
-                          // Remove animation after 3s to allow retrigger
-                          if (epicAnimTimeout) clearTimeout(epicAnimTimeout);
-                          epicAnimTimeout = setTimeout(function() {
-                            img.style.animation = 'none';
-                          }, 3000);
-                        }
-                        triggerEpicAnim();
-                        epicAnimInterval = setInterval(triggerEpicAnim, 5000);
-                      }
+                      // After 7s, just show image, no animation
+                      img.style.animation = 'none';
+                      img.classList.remove('epic-shake');
+                      img.classList.add('epic-pulse-scale');
+                      img.style.opacity = '1';
+                      img.style.filter = '';
+                      img.style.boxShadow = '';
+                      updateBoxAndImg.randomShakeActive = false;
                     }
+                    updateBoxAndImg.lastState = 'image';
                   }
                 }
 
@@ -650,6 +670,7 @@
                     img.style.display = 'block';
                     animateImageDrop();
                     stopTypewriter();
+                    img.classList.remove('epic-pulse-scale');
                   });
                 }
               })();
