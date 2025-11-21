@@ -600,6 +600,38 @@
                     img.style.boxShadow = '0 0 0 0 #fff0';
                     updateBoxAndImg.lastState = 'typewriter';
                     if (bounceTimeout) clearTimeout(bounceTimeout);
+                  } else if (t >= 225.0) {
+                    // Show typewriter with 'pusziii<3' at the end of the audio
+                    box.style.display = 'flex';
+                    img.style.display = 'none';
+                    if (typeof updateBoxAndImg.lastState === 'undefined' || updateBoxAndImg.lastState !== 'pusziii') {
+                      if (typewriterTimeout) clearTimeout(typewriterTimeout);
+                      var pusziiiText = 'pusziii<3';
+                      var pusziiiCharIdx = 0;
+                      function pusziiiStep() {
+                        if (!box) return;
+                        if (pusziiiCharIdx <= pusziiiText.length) {
+                          box.textContent = pusziiiText.slice(0, pusziiiCharIdx);
+                          pusziiiCharIdx++;
+                          typewriterTimeout = setTimeout(pusziiiStep, typewriterDelay);
+                        } else {
+                          typewriterTimeout = setTimeout(function() {
+                            box.textContent = '';
+                            pusziiiCharIdx = 0;
+                            pusziiiStep();
+                          }, typewriterPause);
+                        }
+                      }
+                      pusziiiStep();
+                      updateBoxAndImg.lastState = 'pusziii';
+                    }
+                    img.style.animation = 'none';
+                    img.classList.remove('epic-shake', 'epic-pulse-scale');
+                    img.style.opacity = '0';
+                    img.style.filter = 'blur(18px) brightness(1.7)';
+                    img.style.boxShadow = '0 0 0 0 #fff0';
+                    if (epicAnimInterval) { clearInterval(epicAnimInterval); epicAnimInterval = null; }
+                    if (epicAnimTimeout) { clearTimeout(epicAnimTimeout); epicAnimTimeout = null; }
                   } else {
                     // Show image
                     box.style.display = 'none';
