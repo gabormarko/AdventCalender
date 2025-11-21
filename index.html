@@ -338,11 +338,29 @@
 
 @keyframes epicPulseScale {
   0% { transform: scale(1); }
-  50% { transform: scale(1.13); }
+  5% { transform: scale(1.1); }
+  10% { transform: scale(0.9); }
+  15% { transform: scale(1.1); }
+  20% { transform: scale(0.9); }
+  25% { transform: scale(1.1); }
+  30% { transform: scale(0.9); }
+  35% { transform: scale(1.1); }
+  40% { transform: scale(0.9); }
+  45% { transform: scale(1.1); }
+  50% { transform: scale(0.9); }
+  55% { transform: scale(1.10); }
+  60% { transform: scale(0.9); }
+  65% { transform: scale(1.10); }
+  70% { transform: scale(0.9); }
+  75% { transform: scale(1.10); }
+  80% { transform: scale(0.9); }
+  85% { transform: scale(1.10); }
+  90% { transform: scale(0.9); }
+  95% { transform: scale(1.10); }
   100% { transform: scale(1); }
 }
 .epic-pulse-scale {
-  animation: epicPulseScale 1.2s cubic-bezier(.4,0,.6,1) infinite;
+  animation: epicPulseScale 21.2s cubic-bezier(.4,0,.6,1) infinite;
 }
   </style>
 </head>
@@ -657,14 +675,36 @@
                           setTimeout(function() {
                             img.style.animation = 'epicShake 1.1s cubic-bezier(.36,.07,.19,.97)';
                             setTimeout(function() {
-                              img.style.animation = 'epicPulseScale 1.2s cubic-bezier(.4,0,.6,1)';
+                              img.style.animation = 'epicPulseScale 21.2s cubic-bezier(.4,0,.6,1)';
                               setTimeout(function() {
-                                img.style.animation = 'epicPulseScale 1.2s cubic-bezier(.4,0,.6,1) infinite';
-                              }, 2500); // after pulse
+                                img.classList.add('epic-pulse-scale');
+                              }, 21500); // after pulse
                             }, 1500); // after shake
                           }, 700); // after bounce
                         }, 500); // after flash
                       }, 1700); // after drop                 
+                      
+                      img.style.opacity = '1';
+                      img.style.filter = '';
+                      img.style.boxShadow = '';
+                      // Remove shake class after 1.1s
+                      if (bounceTimeout) clearTimeout(bounceTimeout);
+                      bounceTimeout = setTimeout(function() {
+                        img.classList.remove('epic-shake');
+                      }, 1100);
+                    }else if (since < 225.0) {
+                      // Epic drop + flash + bounce + shake + pulse (chained)
+                      
+                      setTimeout(function() {
+                        img.style.animation = 'epicPulseScale 21.2s cubic-bezier(.4,0,.6,1)';
+                        setTimeout(function() {                         
+                          img.style.animation = 'epicPulseScale 21.2s cubic-bezier(.4,0,.6,1)';
+                          setTimeout(function() {
+                            img.classList.add('epic-pulse-scale');
+                          }, 21500);
+                        }, 21500); // after pulse
+                      }, 21500); // after pulse
+                                           
                       
                       img.style.opacity = '1';
                       img.style.filter = '';
